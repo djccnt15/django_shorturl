@@ -1,0 +1,13 @@
+django:
+  secret_key: qwer
+
+db:
+  ENGINE: django.db.backends.mysql
+  NAME: shorturl
+  USER: qwer
+  PASSWORD: asdf
+  HOST: 127.0.0.1
+  PORT: 3306
+  OPTION:
+    autocommit: True
+    charset: "utfbmb4"

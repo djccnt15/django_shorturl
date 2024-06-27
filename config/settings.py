@@ -12,15 +12,22 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import yaml
+from addict import Dict
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+RESOURCES = Path("resources")
+
+with open(RESOURCES / "config.yaml", encoding="utf-8") as f:
+    config = Dict(yaml.load(f, Loader=yaml.SafeLoader))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-cuyu7^e9l2y3q8o58dl(nm%gs4^(!_!)-j5o&ov3=8p76h_b2r"
+SECRET_KEY = f"django-insecure-{config.django.secret_key}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -73,20 +80,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "shorturl",
-        "USER": "qwer",
-        "PASSWORD": "asdf",
-        "HOST": "127.0.0.1",
-        "PORT": 3306,
-        "OPTION": {
-            "autocommit": True,
-            "charset": "utfbmb4",
-        },
-    }
-}
+DATABASES = {"default": config.db}
 
 
 # Password validation
