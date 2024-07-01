@@ -34,6 +34,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# set specific app user model as a project auth model
+AUTH_USER_MODEL = "shorturl.User"
 
 # Application definition
 
