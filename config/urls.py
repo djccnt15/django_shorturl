@@ -16,11 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from shorturl import views as shorturl_view
 
 urlpatterns = [
     path(route="admin/", view=admin.site.urls),
+    # Django Debug Toolbar
+    path(route="__debug__/", view=include("debug_toolbar.urls")),
     path(route="", view=shorturl_view.index),
 ]
