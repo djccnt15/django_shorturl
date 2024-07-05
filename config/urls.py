@@ -25,4 +25,5 @@ urlpatterns = [
     # Django Debug Toolbar
     path(route="__debug__/", view=include("debug_toolbar.urls")),
     path(route="", view=shorturl_view.index),
+    path(route="register", view=shorturl_view.register, name="register"),
 ]
