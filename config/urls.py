@@ -26,6 +26,8 @@ urlpatterns = [
     path(route="admin/", view=admin.site.urls),
     path(route="", view=shorturl_view.index),
     path(route="register", view=shorturl_view.register, name="register"),
+    path(route="login", view=shorturl_view.login_view, name="login"),
+    path(route="logout", view=shorturl_view.logout_view, name="logout"),
 ]
 if DEBUG:
     urlpatterns += [

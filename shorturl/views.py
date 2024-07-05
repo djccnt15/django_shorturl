@@ -1,8 +1,9 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import redirect, render
 
-from .forms import RegisterForm
+from .forms import LoginForm, RegisterForm
+from .models import User
 
 # Create your views here.
 
@@ -35,3 +36,41 @@ def register(request: WSGIRequest):
         template_name="register.html",
         context={"form": form},
     )
+
+
+def login_view(request: WSGIRequest):
+    is_ok = False
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email: str = form.cleaned_data.get("email", "")
+            raw_password: str = form.cleaned_data.get("password", "")
+            remember_me: bool = form.cleaned_data.get("remember_me", False)
+            msg = "올바른 유저ID와 패스워드를 입력하세요."
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                pass
+            else:
+                if user.check_password(raw_password):
+                    msg = None
+                    login(request, user)
+                    is_ok = True
+                    request.session["remember_me"] = remember_me
+
+                    if not remember_me:
+                        request.session.set_expiry(0)
+    else:
+        msg = None
+        form = LoginForm()
+    # print("REMEMBER_ME: ", request.session.get("remember_me"))
+    return render(
+        request=request,
+        template_name="login.html",
+        context={"form": form, "msg": msg, "is_ok": is_ok},
+    )
+
+
+def logout_view(request: WSGIRequest):
+    logout(request=request)
+    return redirect(to="login")
