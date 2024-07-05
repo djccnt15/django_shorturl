@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import yaml
@@ -30,9 +31,13 @@ with open(RESOURCES / "config.yaml", encoding="utf-8") as f:
 SECRET_KEY = f"django-insecure-{config.django.secret_key}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENV = os.environ.get("DJANGO_ENV", "dev")
+if ENV == "dev":
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # set specific app user model as a project auth model
 AUTH_USER_MODEL = "shorturl.User"
@@ -46,9 +51,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar",  # Django Debug Toolbar
     "shorturl.apps.ShorturlConfig",
 ]
+if DEBUG:
+    INSTALLED_APPS += [
+        "debug_toolbar",  # Django Debug Toolbar
+    ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -58,8 +66,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",  # Django Debug Toolbar
 ]
+if DEBUG:
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",  # Django Debug Toolbar
+    ]
 
 ROOT_URLCONF = "config.urls"
 
