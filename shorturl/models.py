@@ -7,14 +7,20 @@ from django.db import models
 # Create your models here.
 
 
-class PayPlan(models.Model):
-    name = models.CharField(max_length=20)
-    price = models.IntegerField()
+class TimeStampModel(models.Model):
+    class Meta:
+        abstract = True
+
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Organization(models.Model):
+class PayPlan(TimeStampModel):
+    name = models.CharField(max_length=20)
+    price = models.IntegerField()
+
+
+class Organization(TimeStampModel):
     class Industries(models.TextChoices):
         PERSONAL = "personal"
         RETAIL = "retail"
@@ -29,8 +35,6 @@ class Organization(models.Model):
         default=Industries.OTHERS,
     )
     pay_plan = models.ForeignKey(to=PayPlan, on_delete=models.DO_NOTHING, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class User(AbstractUser):
@@ -42,15 +46,13 @@ class User(AbstractUser):
     )
 
 
-class EmailVerification(models.Model):
+class EmailVerification(TimeStampModel):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     key = models.CharField(max_length=100, null=True)
     verified = models.BooleanField(default=False)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Category(models.Model):
+class Category(TimeStampModel):
     name = models.CharField(max_length=100)
     organization = models.ForeignKey(
         to=Organization,
@@ -58,11 +60,9 @@ class Category(models.Model):
         null=True,
     )
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
-class ShortenedUrl(models.Model):
+class ShortenedUrl(TimeStampModel):
     class UrlCreatedVia(models.TextChoices):
         WEBSITE = "web"
         TELEGRAM = "telegram"
@@ -83,5 +83,3 @@ class ShortenedUrl(models.Model):
         default=UrlCreatedVia.WEBSITE,
     )
     expired_at = models.DateTimeField(null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
