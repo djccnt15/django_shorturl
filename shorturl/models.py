@@ -44,6 +44,8 @@ class Organization(TimeStampModel):
 
 class User(AbstractUser):
     full_name = models.CharField(max_length=100, null=True, blank=True)
+    telegram_username = models.CharField(max_length=100, null=True, blank=True)
+    url_count = models.IntegerField(default=0)
     organization = models.ForeignKey(
         to=Organization,
         on_delete=models.DO_NOTHING,
