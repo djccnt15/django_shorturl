@@ -34,21 +34,27 @@ class Organization(TimeStampModel):
         choices=Industries.choices,
         default=Industries.OTHERS,
     )
-    pay_plan = models.ForeignKey(to=PayPlan, on_delete=models.DO_NOTHING, null=True)
+    pay_plan = models.ForeignKey(
+        to=PayPlan,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+    )
 
 
 class User(AbstractUser):
-    full_name = models.CharField(max_length=100, null=True)
+    full_name = models.CharField(max_length=100, null=True, blank=True)
     organization = models.ForeignKey(
         to=Organization,
         on_delete=models.DO_NOTHING,
         null=True,
+        blank=True,
     )
 
 
 class EmailVerification(TimeStampModel):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    key = models.CharField(max_length=100, null=True)
+    key = models.CharField(max_length=100, null=True, blank=True)
     verified = models.BooleanField(default=False)
 
 
@@ -58,6 +64,7 @@ class Category(TimeStampModel):
         to=Organization,
         on_delete=models.DO_NOTHING,
         null=True,
+        blank=True,
     )
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
 
@@ -72,7 +79,12 @@ class ShortenedUrl(TimeStampModel):
         return "".join([random.choice(seq=str_pool) for _ in range(6)]).lower()
 
     nick_name = models.CharField(max_length=100)
-    category = models.ForeignKey(to=Category, on_delete=models.DO_NOTHING, null=True)
+    category = models.ForeignKey(
+        to=Category,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+    )
     prefix = models.CharField(max_length=50)
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
     target_url = models.CharField(max_length=200)
@@ -82,4 +94,4 @@ class ShortenedUrl(TimeStampModel):
         choices=UrlCreatedVia.choices,
         default=UrlCreatedVia.WEBSITE,
     )
-    expired_at = models.DateTimeField(null=True)
+    expired_at = models.DateTimeField(null=True, blank=True)
