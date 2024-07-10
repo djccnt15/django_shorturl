@@ -2,15 +2,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import redirect, render
 
+from ..models import User
 from .forms import LoginForm, RegisterForm
-from .models import User
 
 # Create your views here.
-
-
-def index(request: WSGIRequest):
-    # temporal redirect to admin page
-    return redirect(to="admin/")
 
 
 def register(request: WSGIRequest):
@@ -64,6 +59,8 @@ def login_view(request: WSGIRequest):
         msg = None
         form = LoginForm()
     # print("REMEMBER_ME: ", request.session.get("remember_me"))
+    if request.user.is_authenticated:
+        return redirect(to="urls/")
     return render(
         request=request,
         template_name="login.html",

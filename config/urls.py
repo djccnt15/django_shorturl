@@ -18,16 +18,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from shorturl import views as shorturl_view
+from shorturl.index import urls as index_url
+from shorturl.urls import urls as url_url
+from shorturl.user import urls as user_url
 
 from .settings import DEBUG
 
 urlpatterns = [
     path(route="admin/", view=admin.site.urls),
-    path(route="", view=shorturl_view.index),
-    path(route="register", view=shorturl_view.register, name="register"),
-    path(route="login", view=shorturl_view.login_view, name="login"),
-    path(route="logout", view=shorturl_view.logout_view, name="logout"),
+    path(route="", view=include(index_url.urlpatterns)),
+    path(route="", view=include(user_url.urlpatterns)),
+    path(route="urls/", view=include(url_url.urlpatterns)),
 ]
 if DEBUG:
     urlpatterns += [
