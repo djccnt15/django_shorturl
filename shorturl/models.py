@@ -72,6 +72,9 @@ class Category(TimeStampModel):
 
 
 class ShortenedUrl(TimeStampModel):
+    class Meta:
+        indexes = [models.Index(fields=["prefix", "shortened_url"])]
+
     class UrlCreatedVia(models.TextChoices):
         WEBSITE = "web"
         TELEGRAM = "telegram"
@@ -80,6 +83,10 @@ class ShortenedUrl(TimeStampModel):
         str_pool = string.digits + string.ascii_letters
         return "".join([random.choice(seq=str_pool) for _ in range(6)]).lower()
 
+    def rand_letter():
+        str_pool = string.ascii_letters
+        return random.choice(str_pool).lower()
+
     nick_name = models.CharField(max_length=100)
     category = models.ForeignKey(
         to=Category,
@@ -87,7 +94,7 @@ class ShortenedUrl(TimeStampModel):
         null=True,
         blank=True,
     )
-    prefix = models.CharField(max_length=50)
+    prefix = models.CharField(max_length=50, default=rand_letter)
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
     target_url = models.CharField(max_length=200)
     shortened_url = models.CharField(max_length=6, default=rand_string)
