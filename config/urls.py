@@ -20,6 +20,7 @@ from django.urls import include, path
 
 from shorturl.index import urls as index_url
 from shorturl.urls import urls as url_url
+from shorturl.urls import views as url_view
 from shorturl.user import urls as user_url
 
 from .settings import DEBUG
@@ -29,6 +30,7 @@ urlpatterns = [
     path(route="", view=include(index_url.urlpatterns)),
     path(route="", view=include(user_url.urlpatterns)),
     path(route="urls/", view=include(url_url.urlpatterns)),
+    path(route="<str:prefix>/<str:url>", view=url_view.url_redirect),
 ]
 if DEBUG:
     urlpatterns += [
