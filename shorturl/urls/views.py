@@ -3,18 +3,25 @@ from django.contrib.auth.decorators import login_required
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import get_object_or_404, redirect, render
 
-from ..models import ShortenedUrl
+from ..models import ShortenedUrl, Statistic
 from .forms import UrlCreateForm
 
 
 def url_redirect(request: WSGIRequest, prefix, url):
+    was_limited = getattr(request, "limited", False)
+    if was_limited:
+        return redirect("index")
     get_url = get_object_or_404(klass=ShortenedUrl, prefix=prefix, shortened_url=url)
     is_permanent = False
     target = get_url.target_url
     if get_url.creator.organization:
         is_permanent = True
+
     if not target.startswith("https://") and not target.startswith("http://"):
         target = "https://" + get_url.target_url
+
+    history = Statistic()
+    history.record(request=request, url=get_url)
     return redirect(to=target, permanent=is_permanent)
 
 
