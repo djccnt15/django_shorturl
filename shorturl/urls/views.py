@@ -2,11 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django_ratelimit.decorators import ratelimit
 
 from ..models import ShortenedUrl, Statistic
 from .forms import UrlCreateForm
 
 
+@ratelimit(key="ip", rate="3/m")
 def url_redirect(request: WSGIRequest, prefix, url):
     was_limited = getattr(request, "limited", False)
     if was_limited:
