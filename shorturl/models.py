@@ -101,7 +101,7 @@ class ShortenedUrl(TimeStampModel):
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
     target_url = models.CharField(max_length=200)
     shortened_url = models.CharField(max_length=6, default=rand_string)
-    created_vid = models.CharField(
+    created_via = models.CharField(
         max_length=8,
         choices=UrlCreatedVia.choices,
         default=UrlCreatedVia.WEBSITE,
