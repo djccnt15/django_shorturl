@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.handlers.wsgi import WSGIRequest
+
+# from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django_ratelimit.decorators import ratelimit
 
@@ -22,14 +24,22 @@ def url_redirect(request: WSGIRequest, prefix, url):
     if not target.startswith("https://") and not target.startswith("http://"):
         target = "https://" + get_url.target_url
 
+    custom_params = request.GET.dict() if request.GET.dict() else None
     history = Statistic()
-    history.record(request=request, url=get_url)
+    history.record(request=request, url=get_url, params=custom_params)
     return redirect(to=target, permanent=is_permanent)
 
 
 def url_list(request: WSGIRequest):
     if not request.user.is_authenticated:
         return redirect(to="login")
+
+    # statics = (
+    #     Statistic.objects.filter(shortened_url_id=5)
+    #     .values("custom_params__email_id")
+    #     .annotate(t=Count("custom_params__email_id"))
+    # )
+    # print(statics)
 
     get_list = ShortenedUrl.objects.order_by("-created_at").all()
     return render(request, "url_list.html", {"list": get_list})

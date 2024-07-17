@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Organization, PayPlan, Statistic, User
+from .models import Organization, PayPlan, Statistic, TrackingParams, User
 
 # Register your models here.
 
@@ -11,5 +11,6 @@ admin.site.register(
         Organization,
         PayPlan,
         Statistic,
+        TrackingParams,
     ]
 )

@@ -2,9 +2,10 @@ import random
 import string
 
 from django.contrib.auth.models import AbstractUser
-from django.contrib.gis.geoip2 import GeoIP2
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import models
+
+from . import model_utils
 
 # Create your models here.
 
@@ -126,8 +127,9 @@ class Statistic(TimeStampModel):
     device_os = models.CharField(max_length=30)
     country_code = models.CharField(max_length=2, default="XX")
     country_name = models.CharField(max_length=100, default="UNKNOWN")
+    custom_params = models.JSONField(null=True)
 
-    def record(self, *, request: WSGIRequest, url: ShortenedUrl):
+    def record(self, *, request: WSGIRequest, url: ShortenedUrl, params: dict):
         self.shortened_url = url
 
         # TODO this will catch web server IP on product env
@@ -144,11 +146,32 @@ class Statistic(TimeStampModel):
             )
         )
         self.device_os = request.user_agent.os.family
+        if params:
+            tracking_param = TrackingParams.get_tracking_params(url.id)
+            self.custom_params = model_utils.dict_slice(
+                d=model_utils.dict_filter(
+                    d=params,
+                    filter_list=tracking_param,
+                ),
+                n=5,
+            )
+
         try:
-            country = GeoIP2().country(self.ip)
+            country = model_utils.location_finder(request=request)
             self.country_code = country.get("country_code", "XX")
             self.country_name = country.get("country_name", "UNKNOWN")
         except Exception:
             pass
         url.clicked()
         self.save()
+
+
+class TrackingParams(TimeStampModel):
+    shortened_url = models.ForeignKey(ShortenedUrl, on_delete=models.CASCADE)
+    params = models.CharField(max_length=20)
+
+    @classmethod
+    def get_tracking_params(cls, shortened_url_id: int):
+        return cls.objects.filter(shortened_url_id=shortened_url_id).values_list(
+            "params", flat=True
+        )
