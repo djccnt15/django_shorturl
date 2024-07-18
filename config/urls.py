@@ -30,6 +30,7 @@ urlpatterns = [
     path(route="", view=include(index_url.urlpatterns)),
     path(route="", view=include(user_url.urlpatterns)),
     path(route="urls/", view=include(url_url.urlpatterns)),
+    path(route="api/", view=include(url_url.router.urls)),
     path(route="<str:prefix>/<str:url>", view=url_view.url_redirect),
 ]
 if DEBUG:

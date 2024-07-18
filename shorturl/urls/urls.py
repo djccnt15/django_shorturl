@@ -1,6 +1,11 @@
 from django.urls import path
+from rest_framework import routers
 
 from . import views
+from .apis import UrlListView
+
+router = routers.DefaultRouter()
+router.register(prefix=r"urls", viewset=UrlListView)
 
 urlpatterns = [
     path(route="", view=views.url_list, name="url_list"),
