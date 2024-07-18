@@ -7,3 +7,4 @@ geoip2
 django-user-agents
 django-ratelimit
 djangorestframework
+drf-spectacular

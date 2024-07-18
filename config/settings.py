@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_user_agents",
     "rest_framework",
+    "drf_spectacular",
     "shorturl.apps.ShorturlConfig",
 ]
 if DEBUG:
@@ -157,4 +158,12 @@ INTERNAL_IPS = [
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ShortURL project",
+    "DESCRIPTION": "toy project",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
