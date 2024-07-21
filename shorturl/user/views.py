@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import redirect, render
 
+from ..enums import UrlNameEnum
 from ..models import User
 from .forms import LoginForm, RegisterForm
 
@@ -49,18 +50,17 @@ def login_view(request: WSGIRequest):
             else:
                 if user.check_password(raw_password):
                     msg = None
-                    login(request, user)
+                    login(request=request, user=user)
                     is_ok = True
                     request.session["remember_me"] = remember_me
-
                     if not remember_me:
-                        request.session.set_expiry(0)
+                        request.session.set_expiry(value=0)
     else:
         msg = None
         form = LoginForm()
     # print("REMEMBER_ME: ", request.session.get("remember_me"))
     if request.user.is_authenticated:
-        return redirect(to="urls/")
+        return redirect(to=UrlNameEnum.URL_LIST)
     return render(
         request=request,
         template_name="login.html",
@@ -70,4 +70,4 @@ def login_view(request: WSGIRequest):
 
 def logout_view(request: WSGIRequest):
     logout(request=request)
-    return redirect(to="login")
+    return redirect(to=UrlNameEnum.LOGIN)

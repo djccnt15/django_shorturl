@@ -6,6 +6,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django_ratelimit.decorators import ratelimit
 
+from ..enums import UrlNameEnum
 from ..models import ShortenedUrl, Statistic
 from .forms import UrlCreateForm
 
@@ -14,7 +15,7 @@ from .forms import UrlCreateForm
 def url_redirect(request: WSGIRequest, prefix, url):
     was_limited = getattr(request, "limited", False)
     if was_limited:
-        return redirect("index")
+        return redirect(to=UrlNameEnum.INDEX)
     get_url = get_object_or_404(klass=ShortenedUrl, prefix=prefix, shortened_url=url)
     is_permanent = False
     target = get_url.target_url
@@ -32,7 +33,7 @@ def url_redirect(request: WSGIRequest, prefix, url):
 
 def url_list(request: WSGIRequest):
     if not request.user.is_authenticated:
-        return redirect(to="login")
+        return redirect(to=UrlNameEnum.LOGIN)
 
     # statics = (
     #     Statistic.objects.filter(shortened_url_id=5)
@@ -58,7 +59,7 @@ def url_create(request: WSGIRequest):
             msg = f"{form.cleaned_data.get('nick_name')} 생성 완료!"
             messages.add_message(request, messages.INFO, msg)
             form.save(request)
-            return redirect(to="url_list")
+            return redirect(to=UrlNameEnum.URL_LIST)
         else:
             form = UrlCreateForm()
     else:
@@ -100,4 +101,4 @@ def url_change(request: WSGIRequest, action, url_id):
             context={"form": form, "is_update": True},
         )
 
-    return redirect(to="url_list")
+    return redirect(to=UrlNameEnum.URL_LIST)

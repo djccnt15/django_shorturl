@@ -1,9 +1,10 @@
 from django.urls import path
 
+from ..enums import UrlNameEnum
 from . import views
 
 urlpatterns = [
-    path(route="register", view=views.register, name="register"),
-    path(route="login", view=views.login_view, name="login"),
-    path(route="logout", view=views.logout_view, name="logout"),
+    path(route=UrlNameEnum.REGISTER, view=views.register, name=UrlNameEnum.REGISTER),
+    path(route=UrlNameEnum.LOGIN, view=views.login_view, name=UrlNameEnum.LOGIN),
+    path(route=UrlNameEnum.LOGOUT, view=views.logout_view, name=UrlNameEnum.LOGOUT),
 ]
