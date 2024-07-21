@@ -42,7 +42,11 @@ def url_list(request: WSGIRequest):
     # print(statics)
 
     get_list = ShortenedUrl.objects.order_by("-created_at").all()
-    return render(request, "url_list.html", {"list": get_list})
+    return render(
+        request=request,
+        template_name="url_list.html",
+        context={"list": get_list},
+    )
 
 
 @login_required
@@ -54,12 +58,16 @@ def url_create(request: WSGIRequest):
             msg = f"{form.cleaned_data.get('nick_name')} 생성 완료!"
             messages.add_message(request, messages.INFO, msg)
             form.save(request)
-            return redirect("url_list")
+            return redirect(to="url_list")
         else:
             form = UrlCreateForm()
     else:
         form = UrlCreateForm()
-    return render(request, "url_create.html", {"form": form})
+    return render(
+        request=request,
+        template_name="url_create.html",
+        context={"form": form},
+    )
 
 
 @login_required
@@ -86,6 +94,10 @@ def url_change(request: WSGIRequest, action, url_id):
     elif request.method == "GET" and action == "update":
         url_data = ShortenedUrl.objects.filter(pk=url_id).first()
         form = UrlCreateForm(instance=url_data)
-        return render(request, "url_create.html", {"form": form, "is_update": True})
+        return render(
+            request=request,
+            template_name="url_create.html",
+            context={"form": form, "is_update": True},
+        )
 
-    return redirect("url_list")
+    return redirect(to="url_list")
