@@ -42,12 +42,7 @@ def url_list(request: WSGIRequest):
     # )
     # print(statics)
 
-    get_list = ShortenedUrl.objects.order_by("-created_at").all()
-    return render(
-        request=request,
-        template_name="url_list.html",
-        context={"list": get_list},
-    )
+    return render(request=request, template_name="url_list.html")
 
 
 @login_required
