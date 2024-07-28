@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import F
 from rest_framework.request import Request
@@ -15,3 +17,8 @@ def url_count_changer(request: WSGIRequest | Request, is_increase: bool):
 
 def MsgOk(status: int = 200):
     return Response({"msg": "ok"}, status=status)
+
+
+def get_kst():
+    KST = timezone(offset=timedelta(hours=9), name="KST")
+    return datetime.now(tz=KST)

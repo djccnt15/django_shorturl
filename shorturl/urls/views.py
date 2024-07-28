@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.handlers.wsgi import WSGIRequest
+from django.db.models.aggregates import Count
 
 # from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,6 +11,7 @@ from django_ratelimit.decorators import ratelimit
 
 from ..enums import UrlNameEnum
 from ..models import ShortenedUrl, Statistic
+from ..utils import get_kst
 from .forms import UrlCreateForm
 
 
@@ -97,3 +101,29 @@ def url_change(request: WSGIRequest, action, url_id):
         )
 
     return redirect(to=UrlNameEnum.URL_LIST)
+
+
+def statistic_view(request, url_id: int):
+    url_info = get_object_or_404(ShortenedUrl, pk=url_id)
+    base_qs = Statistic.objects.filter(
+        shortened_url_id=url_id, created_at__gte=get_kst() - timedelta(days=14)
+    )
+    clicks = (
+        base_qs.values("created_at__date")
+        .annotate(clicks=Count("id"))
+        .values("created_at__date", "clicks")
+        .order_by("created_at__date")
+    )
+
+    date_list = [c.get("created_at__date").strftime("%Y-%m-%d") for c in clicks]
+    click_list = [c.get("clicks") for c in clicks]
+    return render(
+        request=request,
+        template_name="statistics.html",
+        context={
+            "url": url_info,
+            "kst": get_kst(),
+            "date_list": date_list,
+            "click_list": click_list,
+        },
+    )

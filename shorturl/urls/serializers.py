@@ -47,3 +47,9 @@ class UrlCreateSerializer(serializers.Serializer):
             else:
                 url_count_changer(request, True)
         return instance
+
+
+class BrowerStatSerializer(serializers.Serializer):
+    web_browser = serializers.CharField(max_length=50)
+    count = serializers.IntegerField()
+    date = serializers.DateField(source="created_at__date", required=False)

@@ -16,4 +16,9 @@ urlpatterns = [
         view=views.url_change,
         name=UrlNameEnum.URL_CHANGE,
     ),
+    path(
+        route="<int:url_id>/statistic",
+        view=views.statistic_view,
+        name="statistic_view",
+    ),
 ]
