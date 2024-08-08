@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.cache import cache
 from django.db.models.aggregates import Count
 from django.http.response import Http404
 from rest_framework import permissions, status, viewsets
@@ -52,7 +53,10 @@ class UrlListView(viewsets.ModelViewSet):
 
     # GET ALL
     def list(self, request):
-        queryset = self.get_queryset().all()
+        queryset = cache.get("url_list")
+        if not queryset:
+            queryset = self.get_queryset().filter(creator_id=request.user.id).all()
+            cache.set(key="url_list", value=queryset, timeout=300)
         serializer = UrlListSerializer(queryset, many=True)
         return Response(serializer.data)
 

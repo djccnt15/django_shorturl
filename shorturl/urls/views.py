@@ -7,6 +7,7 @@ from django.db.models.aggregates import Count
 
 # from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_page
 from django_ratelimit.decorators import ratelimit
 
 from ..enums import UrlNameEnum
@@ -103,6 +104,7 @@ def url_change(request: WSGIRequest, action, url_id):
     return redirect(to=UrlNameEnum.URL_LIST)
 
 
+@cache_page(timeout=10)
 def statistic_view(request, url_id: int):
     url_info = get_object_or_404(ShortenedUrl, pk=url_id)
     base_qs = Statistic.objects.filter(
